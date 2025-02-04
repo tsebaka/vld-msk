@@ -1,23 +1,47 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>Грузоперевозки Vladikavkaz ⇄ Moscow</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Подключаем стили -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Грузоперевозки Vladikavkaz ⇄ Moscow</h1>
-    <svg id="map" viewBox="0 0 1000 600">
-      <!-- Тут сама карта, города, маршрут -->
-      <path id="route" d="M 100 500 Q 300 300 500 400 Q 700 500 900 200" 
-            fill="none" stroke="#ff0000" stroke-width="3" />
-      <!-- Грузовик (можно как svg-иконка) -->
-      <circle id="truck" r="10" fill="blue" cx="100" cy="500" />
-    </svg>
+  <div class="wrapper">
+    
+    <!-- Блок с погодой слева -->
+    <div class="weather-box left">
+      <h2>Владикавказ</h2>
+      <p>+5°C, солнечно</p>
+    </div>
+
+    <!-- Контейнер для планеты/Three.js -->
+    <div id="planet-container"></div>
+
+    <!-- Блок с погодой справа -->
+    <div class="weather-box right">
+      <h2>Москва</h2>
+      <p>-1°C, облачно</p>
+    </div>
+
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+
+  <!-- Подвал с контактами -->
+  <footer>
+    <p>Грузоперевозки Владикавказ – Москва</p>
+    <p>Тел: +7 (999) 999-99-99</p>
+  </footer>
+
+  <!-- Скрипты Three.js -->
+  <!-- Можно подключать через CDN, например: 
+    <script src="https://unpkg.com/three@0.148.0/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.148.0/examples/js/controls/OrbitControls.js"></script>
+   -->
+  <script src="three/three.min.js"></script>
+  <script src="three/OrbitControls.js"></script>
+
+  <!-- Наш главный скрипт -->
   <script src="script.js"></script>
 </body>
 </html>
