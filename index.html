@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Грузоперевозки Vladikavkaz ⇄ Moscow</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Грузоперевозки Vladikavkaz ⇄ Moscow</h1>
+    <svg id="map" viewBox="0 0 1000 600">
+      <!-- Тут сама карта, города, маршрут -->
+      <path id="route" d="M 100 500 Q 300 300 500 400 Q 700 500 900 200" 
+            fill="none" stroke="#ff0000" stroke-width="3" />
+      <!-- Грузовик (можно как svg-иконка) -->
+      <circle id="truck" r="10" fill="blue" cx="100" cy="500" />
+    </svg>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
