@@ -1,35 +1,65 @@
-* {
-  margin: 0; 
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Бежевый фон для всей страницы */
 body {
-  background: #fefefe; /* Или картинка/текстура */
+  margin: 0;
+  padding: 0;
+  background: #f5f5dc; /* бежевый */
   font-family: sans-serif;
+  color: #333;
 }
 
-.container {
+/* Контейнер для планеты и погодных блоков */
+.wrapper {
+  position: relative;
   width: 100vw;
   height: 100vh;
+  overflow: hidden; /* чтобы не было прокрутки */
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
-h1 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+/* Блок погоды слева и справа */
+.weather-box {
+  position: absolute;
+  width: 140px;
+  text-align: center;
+  background: rgba(255,255,255,0.8);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-#map {
-  width: 80%;
-  max-width: 1000px;
-  height: auto;
+.weather-box h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  color: #000;
 }
 
-#route {
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
+.left {
+  left: 20px;
+  top: 20px;
+}
+
+.right {
+  right: 20px;
+  top: 20px;
+}
+
+/* Контейнер для планеты (Three.js Canvas) */
+#planet-container {
+  width: 600px;
+  height: 600px;
+  max-width: 80vw;
+  max-height: 80vh;
+  background: transparent;
+}
+
+/* Подвал */
+footer {
+  position: absolute;
+  bottom: 15px;
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+  color: #333;
 }
