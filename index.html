@@ -10,16 +10,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   
   <style>
-    /* Стили для базового оформления */
     body {
       margin: 0;
       padding: 0;
-      background-color: #f5f5dc; /* бежевый фон */
+      background-color: #f5f5dc;
       font-family: 'Poppins', sans-serif;
       color: #333;
-      overflow: hidden; /* убираем лишнюю прокрутку */
+      overflow: hidden;
     }
-    /* Контейнер под всю сцену */
     .scene-container {
       position: absolute;
       top: 0;
@@ -27,14 +25,13 @@
       width: 100vw;
       height: 100vh;
     }
-    /* Блоки с информацией о погоде */
     .weather-box {
       position: absolute;
       width: 200px;
       padding: 15px;
       background-color: rgba(255, 255, 255, 0.7);
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
       text-align: center;
     }
     .weather-box h2 {
@@ -54,7 +51,6 @@
       top: 20px;
       right: 20px;
     }
-    /* Подвал с контактной информацией */
     footer {
       position: absolute;
       bottom: 20px;
@@ -69,7 +65,6 @@
   </style>
 </head>
 <body>
-  <!-- Блоки с погодой -->
   <div class="weather-box left-box">
     <h2>Владикавказ</h2>
     <p>+5°C, солнечно</p>
@@ -79,10 +74,8 @@
     <p>-1°C, облачно</p>
   </div>
 
-  <!-- Контейнер для 3D-сцены -->
   <div id="scene-container" class="scene-container"></div>
 
-  <!-- Подвал с контактами -->
   <footer>
     <p><strong>Грузоперевозки Владикавказ – Москва</strong></p>
     <p>Тел: +7 (999) 999-99-99</p>
@@ -93,15 +86,13 @@
   <script src="https://unpkg.com/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
   
   <script>
-    /********************************************************
-     * Создание сцены, камеры, Земли, маркеров и самолётика *
-     ********************************************************/
+    console.log("Запуск скрипта");
+
     let scene, camera, renderer, controls;
     let earthMesh, airplane;
     const clock = new THREE.Clock();
-    const planeSpeed = 0.4; // скорость движения самолёта
+    const planeSpeed = 0.4;
 
-    // Геокоординаты городов (примерные)
     const moscow = { lat: 55.7558, lon: 37.6173 };
     const vladikavkaz = { lat: 43.0245, lon: 44.6906 };
 
@@ -109,10 +100,9 @@
     animate();
 
     function init() {
-      // Создание сцены
+      console.log("Инициализация сцены");
       scene = new THREE.Scene();
 
-      // Камера
       camera = new THREE.PerspectiveCamera(
         45, 
         window.innerWidth / window.innerHeight,
@@ -121,31 +111,31 @@
       );
       camera.position.set(0, 0, 3);
 
-      // Рендерер
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       const container = document.getElementById('scene-container');
       renderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(renderer.domElement);
+      console.log("Рендерер создан");
 
-      // Управление сценой (OrbitControls)
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.1;
       controls.minDistance = 1.2;
       controls.maxDistance = 10;
 
-      // Освещение
       const dirLight = new THREE.DirectionalLight(0xffffff, 1);
       dirLight.position.set(5, 3, 5);
       scene.add(dirLight);
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
       scene.add(ambientLight);
 
-      // Геометрия Земли (сфера)
       const sphereGeom = new THREE.SphereGeometry(1, 64, 64);
       const textureLoader = new THREE.TextureLoader();
       const earthTexture = textureLoader.load(
-        "https://raw.githubusercontent.com/learning-zone/website-templates/master/3D-globe/texture/earth.jpg"
+        "https://raw.githubusercontent.com/learning-zone/website-templates/master/3D-globe/texture/earth.jpg",
+        () => { console.log("Текстура Земли загружена"); },
+        undefined,
+        (err) => { console.error("Ошибка загрузки текстуры:", err); }
       );
       const sphereMat = new THREE.MeshStandardMaterial({
         map: earthTexture,
@@ -153,30 +143,28 @@
       });
       earthMesh = new THREE.Mesh(sphereGeom, sphereMat);
       scene.add(earthMesh);
+      console.log("Земля создана");
 
-      // Добавляем маркеры городов (небольшие шары)
       const markerGeom = new THREE.SphereGeometry(0.02, 8, 8);
       const markerMatMoscow = new THREE.MeshBasicMaterial({ color: 0xff0000 });
       const markerMatVlad = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 
       const moscowMarker = new THREE.Mesh(markerGeom, markerMatMoscow);
-      // Чуть увеличиваем радиус, чтобы маркер оказался чуть над поверхностью
       moscowMarker.position.copy(latLongToVector3(moscow.lat, moscow.lon, 1.01));
       earthMesh.add(moscowMarker);
 
       const vladMarker = new THREE.Mesh(markerGeom, markerMatVlad);
       vladMarker.position.copy(latLongToVector3(vladikavkaz.lat, vladikavkaz.lon, 1.01));
       earthMesh.add(vladMarker);
+      console.log("Маркеры городов добавлены");
 
-      // Создаём самолётик (простой конус)
       const planeGeom = new THREE.ConeGeometry(0.02, 0.06, 8);
       const planeMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
       airplane = new THREE.Mesh(planeGeom, planeMat);
-      // Поворачиваем конус так, чтобы он смотрел "носом" вперёд
       airplane.rotation.x = Math.PI;
       earthMesh.add(airplane);
+      console.log("Самолётик добавлен");
 
-      // Задаём начальные параметры для анимации самолёта
       airplane.userData = {
         from: moscowMarker.position.clone(),
         to: vladMarker.position.clone(),
@@ -184,11 +172,9 @@
         goingForward: true
       };
 
-      // Обработка изменения размеров окна
       window.addEventListener('resize', onWindowResize);
     }
 
-    // Функция обновления размеров рендерера и камеры
     function onWindowResize() {
       const container = document.getElementById('scene-container');
       camera.aspect = container.clientWidth / container.clientHeight;
@@ -196,7 +182,6 @@
       renderer.setSize(container.clientWidth, container.clientHeight);
     }
 
-    // Перевод географических координат (широта, долгота) в 3D-координаты на сфере
     function latLongToVector3(lat, lon, radius) {
       const phi = (90 - lat) * (Math.PI / 180);
       const theta = (lon + 180) * (Math.PI / 180);
@@ -206,12 +191,10 @@
       return new THREE.Vector3(x, y, z);
     }
 
-    // Анимация движения самолёта по прямой между городами
     function moveAirplane(delta) {
       if (!airplane) return;
       let data = airplane.userData;
 
-      // Обновляем параметр progress (от 0 до 1)
       if (data.goingForward) {
         data.progress += planeSpeed * delta;
         if (data.progress >= 1) {
@@ -226,11 +209,9 @@
         }
       }
 
-      // Интерполяция между точками "from" и "to"
       const newPos = new THREE.Vector3().lerpVectors(data.from, data.to, data.progress);
       airplane.position.copy(newPos);
 
-      // Поворот самолёта по направлению движения
       let dir = new THREE.Vector3().subVectors(data.to, data.from).normalize();
       if (!data.goingForward) {
         dir.negate();
@@ -238,14 +219,10 @@
       airplane.lookAt(airplane.position.clone().add(dir));
     }
 
-    // Главный цикл анимации
     function animate() {
       requestAnimationFrame(animate);
       const delta = clock.getDelta();
-
-      // Автоматическое вращение Земли (можно настроить скорость)
       earthMesh.rotation.y += 0.001;
-
       controls.update();
       moveAirplane(delta);
       renderer.render(scene, camera);
