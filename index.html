@@ -4,22 +4,21 @@
   <meta charset="UTF-8">
   <title>Грузоперевозки Vladikavkaz ⇄ Moscow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Шрифт Google Fonts -->
+  
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
   
   <style>
-    /* Бежевый фон */
+    /* Стили для базового оформления */
     body {
       margin: 0;
       padding: 0;
-      background-color: #f5f5dc; /* бежевый */
+      background-color: #f5f5dc; /* бежевый фон */
       font-family: 'Poppins', sans-serif;
       color: #333;
-      overflow: hidden; /* чтобы не было лишней прокрутки */
+      overflow: hidden; /* убираем лишнюю прокрутку */
     }
-
     /* Контейнер под всю сцену */
     .scene-container {
       position: absolute;
@@ -28,15 +27,14 @@
       width: 100vw;
       height: 100vh;
     }
-
-    /* Погода слева и справа */
+    /* Блоки с информацией о погоде */
     .weather-box {
       position: absolute;
       width: 200px;
       padding: 15px;
       background-color: rgba(255, 255, 255, 0.7);
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
       text-align: center;
     }
     .weather-box h2 {
@@ -56,8 +54,7 @@
       top: 20px;
       right: 20px;
     }
-
-    /* Подвал (контакты) */
+    /* Подвал с контактной информацией */
     footer {
       position: absolute;
       bottom: 20px;
@@ -66,16 +63,13 @@
       font-size: 1.2rem;
       color: #333;
     }
-
-    /* Выделение жирного текста в подвале, если нужно */
     footer p {
       margin: 5px 0;
     }
   </style>
 </head>
 <body>
-  
-  <!-- Два блока с погодой -->
+  <!-- Блоки с погодой -->
   <div class="weather-box left-box">
     <h2>Владикавказ</h2>
     <p>+5°C, солнечно</p>
@@ -85,10 +79,10 @@
     <p>-1°C, облачно</p>
   </div>
 
-  <!-- Контейнер для Three.js-сцены -->
-  <div class="scene-container" id="scene-container"></div>
+  <!-- Контейнер для 3D-сцены -->
+  <div id="scene-container" class="scene-container"></div>
 
-  <!-- Подвал с «Грузоперевозки…» -->
+  <!-- Подвал с контактами -->
   <footer>
     <p><strong>Грузоперевозки Владикавказ – Москва</strong></p>
     <p>Тел: +7 (999) 999-99-99</p>
@@ -100,15 +94,14 @@
   
   <script>
     /********************************************************
-     *  Блок кода Three.js: создаём сцену, камеру, планету. *
+     * Создание сцены, камеры, Земли, маркеров и самолётика *
      ********************************************************/
     let scene, camera, renderer, controls;
     let earthMesh, airplane;
-    let clock = new THREE.Clock();
-    let planeSpeed = 0.4; // Чем больше, тем быстрее самолёт летает
+    const clock = new THREE.Clock();
+    const planeSpeed = 0.4; // скорость движения самолёта
 
-    // Геокоординаты Москвы и Владикавказа:
-    // (примерные, чтоб было заметно, что точки разные)
+    // Геокоординаты городов (примерные)
     const moscow = { lat: 55.7558, lon: 37.6173 };
     const vladikavkaz = { lat: 43.0245, lon: 44.6906 };
 
@@ -116,81 +109,74 @@
     animate();
 
     function init() {
-      // СЦЕНА
+      // Создание сцены
       scene = new THREE.Scene();
 
-      // КАМЕРА
+      // Камера
       camera = new THREE.PerspectiveCamera(
         45, 
         window.innerWidth / window.innerHeight,
         0.1,
         1000
       );
-      camera.position.set(0, 0, 3); // Камера “смотрит” на планету
+      camera.position.set(0, 0, 3);
 
-      // РЕНДЕРЕР
+      // Рендерер
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      // Размер рендерера в соответствии с контейнером
       const container = document.getElementById('scene-container');
       renderer.setSize(container.clientWidth, container.clientHeight);
       container.appendChild(renderer.domElement);
 
-      // УПРАВЛЕНИЯ (OrbitControls)
+      // Управление сценой (OrbitControls)
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.1;
-      controls.minDistance = 1.2;  // Не слишком близко
-      controls.maxDistance = 10;   // Не слишком далеко
+      controls.minDistance = 1.2;
+      controls.maxDistance = 10;
 
-      // ДОБАВИМ ОСВЕЩЕНИЕ
+      // Освещение
       const dirLight = new THREE.DirectionalLight(0xffffff, 1);
       dirLight.position.set(5, 3, 5);
       scene.add(dirLight);
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
       scene.add(ambientLight);
 
-      // ГЕОМЕТРИЯ СФЕРЫ
+      // Геометрия Земли (сфера)
       const sphereGeom = new THREE.SphereGeometry(1, 64, 64);
-
-      // ТЕКСТУРА ЗЕМЛИ
-      // Можно взять любой URL, но здесь пример готовой текстуры
       const textureLoader = new THREE.TextureLoader();
       const earthTexture = textureLoader.load(
         "https://raw.githubusercontent.com/learning-zone/website-templates/master/3D-globe/texture/earth.jpg"
       );
-
-      // МАТЕРИАЛ ДЛЯ ЗЕМЛИ
       const sphereMat = new THREE.MeshStandardMaterial({
         map: earthTexture,
         roughness: 0.8
       });
-
-      // МЕШ (Планета)
       earthMesh = new THREE.Mesh(sphereGeom, sphereMat);
       scene.add(earthMesh);
 
-      // ДОБАВИМ “МАРКЕРЫ” ГОРОДОВ (НЕБОЛЬШИЕ ШАРИКИ)
+      // Добавляем маркеры городов (небольшие шары)
       const markerGeom = new THREE.SphereGeometry(0.02, 8, 8);
-      const markerMatM = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-      const markerMatV = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+      const markerMatMoscow = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const markerMatVlad = new THREE.MeshBasicMaterial({ color: 0x0000ff });
 
-      let moscowMarker = new THREE.Mesh(markerGeom, markerMatM);
-      moscowMarker.position.copy(latLongToVector3(moscow.lat, moscow.lon, 1.0));
+      const moscowMarker = new THREE.Mesh(markerGeom, markerMatMoscow);
+      // Чуть увеличиваем радиус, чтобы маркер оказался чуть над поверхностью
+      moscowMarker.position.copy(latLongToVector3(moscow.lat, moscow.lon, 1.01));
       earthMesh.add(moscowMarker);
 
-      let vladMarker = new THREE.Mesh(markerGeom, markerMatV);
-      vladMarker.position.copy(latLongToVector3(vladikavkaz.lat, vladikavkaz.lon, 1.0));
+      const vladMarker = new THREE.Mesh(markerGeom, markerMatVlad);
+      vladMarker.position.copy(latLongToVector3(vladikavkaz.lat, vladikavkaz.lon, 1.01));
       earthMesh.add(vladMarker);
 
-      // САМОЛЁТИК (ПРОСТОЙ КОНУС)
+      // Создаём самолётик (простой конус)
       const planeGeom = new THREE.ConeGeometry(0.02, 0.06, 8);
       const planeMat = new THREE.MeshBasicMaterial({ color: 0x333333 });
       airplane = new THREE.Mesh(planeGeom, planeMat);
-      // Чуть повернём, чтобы конус “смотрел” носом вперёд
-      airplane.rotation.x = Math.PI; 
+      // Поворачиваем конус так, чтобы он смотрел "носом" вперёд
+      airplane.rotation.x = Math.PI;
       earthMesh.add(airplane);
 
-      // Запишем инфу о положении самолёта
+      // Задаём начальные параметры для анимации самолёта
       airplane.userData = {
         from: moscowMarker.position.clone(),
         to: vladMarker.position.clone(),
@@ -198,11 +184,11 @@
         goingForward: true
       };
 
-      // Обработка изменения размера окна
+      // Обработка изменения размеров окна
       window.addEventListener('resize', onWindowResize);
     }
 
-    // При ресайзе окна обновляем размеры
+    // Функция обновления размеров рендерера и камеры
     function onWindowResize() {
       const container = document.getElementById('scene-container');
       camera.aspect = container.clientWidth / container.clientHeight;
@@ -210,23 +196,22 @@
       renderer.setSize(container.clientWidth, container.clientHeight);
     }
 
-    // Перевод географических координат (lat, lon) в 3D
+    // Перевод географических координат (широта, долгота) в 3D-координаты на сфере
     function latLongToVector3(lat, lon, radius) {
       const phi = (90 - lat) * (Math.PI / 180);
       const theta = (lon + 180) * (Math.PI / 180);
-
       const x = -radius * Math.sin(phi) * Math.cos(theta);
       const z = radius * Math.sin(phi) * Math.sin(theta);
       const y = radius * Math.cos(phi);
       return new THREE.Vector3(x, y, z);
     }
 
-    // Анимация самолётика
+    // Анимация движения самолёта по прямой между городами
     function moveAirplane(delta) {
       if (!airplane) return;
       let data = airplane.userData;
 
-      // Двигаем progress (0..1)
+      // Обновляем параметр progress (от 0 до 1)
       if (data.goingForward) {
         data.progress += planeSpeed * delta;
         if (data.progress >= 1) {
@@ -241,33 +226,30 @@
         }
       }
 
-      // Из from в to (или обратно)
-      let fromPos = data.from;
-      let toPos = data.to;
-      let newPos = new THREE.Vector3().lerpVectors(fromPos, toPos, data.progress);
+      // Интерполяция между точками "from" и "to"
+      const newPos = new THREE.Vector3().lerpVectors(data.from, data.to, data.progress);
       airplane.position.copy(newPos);
 
-      // Поворот носа самолёта по вектору движения
-      let dir = new THREE.Vector3().subVectors(toPos, fromPos).normalize();
+      // Поворот самолёта по направлению движения
+      let dir = new THREE.Vector3().subVectors(data.to, data.from).normalize();
       if (!data.goingForward) {
-        // если летим назад, инвертируем направление
         dir.negate();
       }
-      // Повернуть нос конуса по направлению движения
       airplane.lookAt(airplane.position.clone().add(dir));
     }
 
     // Главный цикл анимации
     function animate() {
       requestAnimationFrame(animate);
-
       const delta = clock.getDelta();
-      controls.update();       // плавность управления
-      moveAirplane(delta);     // полёт самолётика
 
+      // Автоматическое вращение Земли (можно настроить скорость)
+      earthMesh.rotation.y += 0.001;
+
+      controls.update();
+      moveAirplane(delta);
       renderer.render(scene, camera);
     }
   </script>
-
 </body>
 </html>
